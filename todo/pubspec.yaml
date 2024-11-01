@@ -8,6 +8,7 @@ environment:
 
 # Add regular dependencies here.
 dependencies:
+  dcli: ^3.4.0
   # path: ^1.8.0
 
 dev_dependencies:

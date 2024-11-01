@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:dcli/dcli.dart';
 import 'package:todo/todo.dart';
 
 List<Map<String, dynamic>> todos = [];
@@ -26,7 +27,7 @@ void readFromFile() {
 }
 
 void addTodo() {
-  print("Enter Your Todo Title");
+  printerr(green("Enter Your Todo Title\n"));
   String? title = stdin.readLineSync(); // null safety in name string
 
   if (title == null) return; // Handle empty input
@@ -38,29 +39,29 @@ void addTodo() {
 }
 
 void printTodo() {
-        print('+----+-------------------------------------+----------------+---------------+');
+        printerr(green('+----+-------------------------------------+----------------+---------------+'));
 
   final header =
       '| ID |            TODO TITLE               |  CREATED AT      |  COMPELTED  |';
-  print(header);
+  printerr(cyan(header));
 
-  print(
-      '+----+-------------------------------------+----------------+---------------+');
+  printerr(green(
+      '+----+-------------------------------------+----------------+---------------+'));
 
   for (int i = 0; i < todos.length; i++) {
     final task = todos[i];
-    print('| ${i + 1}  | '
+    printerr(green('| ${i + 1}  | '
         '${task['title'].padRight(35)} | '
         '${task['createdAt'].toString().padRight(12)} | '
-        '${task['isCompleted'] ? '✅          ' : '❌          '}|');
-    print(
-        '+----+-------------------------------------+----------------+---------------+');
+        '${task['isCompleted'] ? '✅          ' : '❌          '}|'));
+    printerr(green(
+        '+----+-------------------------------------+----------------+---------------+'));
   }
 }
 
 void markAsCOmplete() {
   printTodo();
-  print("Enter Todo ID to mark as completed:");
+  printerr(green("Enter Todo ID to mark as completed:"));
   String? todoId = stdin.readLineSync();
   try {
     if (todoId != null) {
@@ -69,33 +70,34 @@ void markAsCOmplete() {
         if (todos[n-1]['isCompleted'] != true){
         todos[n - 1]['isCompleted'] = true;
         }else{
-          print('already completed');
+          printerr(yellow('already completed'));
         }
         saveToFile();
       }
     }
   } catch (e) {
-    print("Invalid Input");
+    printerr(red("Invalid Input"));
   }
 }
 
 void deleteTodo() {
   printTodo();
-  print("Enter Todo ID to delete:");
+  printerr(green("Enter Todo ID to delete:"));
   String? todoId = stdin.readLineSync();
   int index = int.parse(todoId!);
   try {
-    todos.removeAt(index - 1);
+    bool allowed = confirm('Are you sure you want to delete this todo?', defaultValue: false);
+   allowed ? todos.removeAt(index - 1) : printerr(red('canceled'));
     saveToFile();
   } catch (e) {
-    print("Invalid Input");
+    printerr(red("Invalid Input"));
   }
 }
 
 void showOptions() {
   while (true) {
-    print(
-        "Type 'A' to add, 'D' to delete, 'C' to mark complete, or 'Q' to quit: ");
+    printerr(orange(
+        "\nType 'A' to add, 'D' to delete, 'C' to mark complete, or 'Q' to quit: \n"));
     String? option = stdin.readLineSync();
     if (option == null) return;
 
@@ -112,7 +114,7 @@ void showOptions() {
       case 'Q':
         break;
       default:
-        print("Invalid Option");
+        printerr(red("Invalid Option"));
     }
     printTodo();
     if (option.toUpperCase() == 'Q') {
@@ -123,10 +125,11 @@ void showOptions() {
 
 void isFirstTime() async {
   if (await File(todoFile).exists()) {
+    printerr(blue("Welcome Back\n\n".padLeft(43)));
     readFromFile();
     printTodo();
   } else {
-    print("Welcome to the TODO App");
+    printerr(blue("Welcome to the TODO App\n\n".padLeft(43)));
     addTodo();
     printTodo();
   }
