@@ -28,7 +28,9 @@ void readFromFile() {
 
 void addTodo() {
   printerr(green("Enter Your Todo Title\n"));
-  String? title = stdin.readLineSync(); // null safety in name string
+  String? title = stdin.readLineSync();
+  
+  title = title?.trim(); // null safety in name string
 
   if (title == null) return; // Handle empty input
   final createdAt =
@@ -82,7 +84,7 @@ void markAsCOmplete() {
 
 void deleteTodo() {
   printTodo();
-  printerr(green("Enter Todo ID to delete:"));
+  printerr(green("\nEnter Todo ID to delete:\n"));
   String? todoId = stdin.readLineSync();
   int index = int.parse(todoId!);
   try {
@@ -96,28 +98,27 @@ void deleteTodo() {
 
 void showOptions() {
   while (true) {
-    printerr(orange(
-        "\nType 'A' to add, 'D' to delete, 'C' to mark complete, or 'Q' to quit: \n"));
-    String? option = stdin.readLineSync();
-    if (option == null) return;
-
-    switch (option.toUpperCase()) {
-      case 'A':
+    print("\n");
+  var selected = menu(blue('\nSelect An Option')
+   , options: ['ADD', 'DELETE', 'COMPLETE', "QUIT"]
+   , defaultOption: 'ADD');
+    switch (selected) {
+      case 'ADD':
         addTodo();
         break;
-      case 'D':
+      case 'DELETE':
         deleteTodo();
         break;
-      case 'C':
+      case 'COMPLETE':
         markAsCOmplete();
         break;
-      case 'Q':
+      case 'QUIT':
         break;
       default:
         printerr(red("Invalid Option"));
     }
     printTodo();
-    if (option.toUpperCase() == 'Q') {
+    if (selected == 'QUIT') {
       break;
     }
   }
@@ -139,5 +140,5 @@ void isFirstTime() async {
 void main() {
   print("\x1B[2J\x1B[0;0H"); // clear entire screen, move cursor to 0;0
   isFirstTime();
-  // showOptions();
+  
 }
